@@ -1,19 +1,27 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import EditTodo from './EditTodo';
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button} from "@nextui-org/react";
+"use client";
+import React, { useEffect, useState } from "react";
+import EditTodo from "./EditTodo";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+} from "@nextui-org/react";
+import axios from "axios";
 
 const ListTodos = () => {
-
   const [todos, setTodos] = useState([]);
 
-  const deleteTodo = async id => {
+  const deleteTodo = async (id) => {
     try {
-      const deleteTodo = await fetch(`http://localhost:5000/todos/${id}`, {
-        method: "DELETE"
-      });
+      const deleteTodo = await axios.delete(
+        `http://localhost:5000/todos/${id}`
+      );
 
-      setTodos(todos.filter(todo => todo.todo_id !== id));
+      setTodos(todos.filter((todo) => todo.todo_id !== id));
     } catch (err) {
       console.error(err.message);
     }
@@ -21,10 +29,8 @@ const ListTodos = () => {
 
   const getTodos = async () => {
     try {
-      const response = await fetch("http://localhost:5000/todos");
-      const jsonData = await response.json();
-
-      setTodos(jsonData);
+      const response = await axios.get("http://localhost:5000/todos");
+      setTodos(response.data);
     } catch (err) {
       console.error(err.message);
     }
@@ -45,24 +51,27 @@ const ListTodos = () => {
           <TableColumn></TableColumn>
         </TableHeader>
         <TableBody>
-        {todos.map((todo) => (
-          <TableRow key={todo.todo_id}>
-            <TableCell>{todo.description}</TableCell>
-            <TableCell><EditTodo todo={todo}/></TableCell>
-            <TableCell>
-              <Button 
-                type="submit" 
-                color="danger"
-                onClick={() => deleteTodo(todo.todo_id)}
-                >Delete
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
+          {todos.map((todo) => (
+            <TableRow key={todo.todo_id}>
+              <TableCell>{todo.description}</TableCell>
+              <TableCell>
+                <EditTodo todo={todo} />
+              </TableCell>
+              <TableCell>
+                <Button
+                  type="submit"
+                  color="danger"
+                  onClick={() => deleteTodo(todo.todo_id)}
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
-  </>
+    </>
   );
 };
 
-export default ListTodos
+export default ListTodos;
